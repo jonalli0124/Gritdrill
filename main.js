@@ -14,7 +14,7 @@ function preload() {
     this.load.image('drill3', './Drill3.png');
     this.load.image('drill4', './Drill4.png');
     this.load.image('drill5', './Drill5.png');
-    this.load.image('startButton', './startButton.png'); // Add your start button image
+    this.load.image('startButton', './startbutton.png'); // Add your start button image
 }
 
 function create() {
