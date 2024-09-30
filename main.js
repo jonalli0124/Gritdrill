@@ -6,6 +6,7 @@ let mudWeight = 50;
 let footageText, inZoneText, torqueText, speedText, mudText;
 
 function preload() {
+    // Load the drill bit images
     this.load.image('drill1', './Drill1.png');
     this.load.image('drill2', './Drill2.png');
     this.load.image('drill3', './Drill3.png');
@@ -14,16 +15,13 @@ function preload() {
 }
 
 function create() {
-    // Set background color to ensure visibility
+    // Add a background color for visibility
     this.cameras.main.setBackgroundColor('#e0e0e0');
-
-    // Add the formation zone
-    formationZone = this.add.rectangle(400, 300, 800, 200, 0x00ff00);
 
     // Add the drill bit sprite
     drillBit = this.physics.add.sprite(400, 300, 'drill1');
 
-    // Create animation
+    // Create animation for the drill bit using frames
     this.anims.create({
         key: 'drilling',
         frames: [
@@ -37,7 +35,7 @@ function create() {
         repeat: -1
     });
 
-    // Play animation
+    // Play the drilling animation
     drillBit.anims.play('drilling');
 
     cursors = this.input.keyboard.createCursorKeys();
@@ -61,21 +59,8 @@ function update(time, delta) {
     }
 
     // Calculate speed and footage drilled
-    speed = Phaser.Math.Clamp(speed, 50, 300);
+    speed = Phaser.Math.Clamp(speed, 50, 300);  // Adjust speed range as needed
     footageDrilled += speed * delta / 3600;  // Convert time to hours for ft/hr
-
-    // Check if the drill is in the zone
-    if (drillBit.y > 200 && drillBit.y < 400) {
-        inZoneDrilled += speed * delta / 3600;
-    }
-
-    // Adjust torque based on speed
-    torque = speed > 250 ? speed - 250 : 0;
-
-    // Mud management (space key to adjust mud)
-    if (cursors.space.isDown) {
-        mudWeight = Phaser.Math.Clamp(mudWeight + 0.1, 30, 100);
-    }
 
     // Update text elements with the latest values
     footageText.setText('Footage Drilled: ' + footageDrilled.toFixed(2) + ' ft');
