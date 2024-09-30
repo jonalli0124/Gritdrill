@@ -33,11 +33,12 @@ let minMud = 10;
 
 function preload() {
     // Load the drill bit frames
-    this.load.image('drill1', 'Drill1.png');
-    this.load.image('drill2', 'Drill2.png');
-    this.load.image('drill3', 'Drill3.png');
-    this.load.image('drill4', 'Drill4.png');
-    this.load.image('drill5', 'Drill5.png');
+    this.load.image('drill1', './Drill1.png'); // Add ./ for relative path
+    this.load.image('drill2', './Drill2.png');
+    this.load.image('drill3', './Drill3.png');
+    this.load.image('drill4', './Drill4.png');
+    this.load.image('drill5', './Drill5.png');
+
 }
 
 function create() {
