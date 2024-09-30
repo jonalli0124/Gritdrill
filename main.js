@@ -8,7 +8,6 @@ let startButton;
 let footageText, inZoneText, torqueText, speedText, mudText;
 
 function preload() {
-    // Load the drill bit images and the start button from your repository
     this.load.image('drill1', './Drill1.png');
     this.load.image('drill2', './Drill2.png');
     this.load.image('drill3', './Drill3.png');
@@ -20,17 +19,20 @@ function preload() {
 function create() {
     // Add a start button
     startButton = this.add.sprite(400, 300, 'startButton').setInteractive();
-
+    
     // Set up button click
     startButton.on('pointerdown', () => {
         startButton.setVisible(false);  // Hide start button once clicked
         gameStarted = true;             // Begin game
     });
 
-    // Add the formation zone
-    formationZone = this.add.rectangle(400, 300, 800, 200, 0x00ff00);  // Adjusted size
+    // Ensure the start button is visible with a light background
+    this.cameras.main.setBackgroundColor('#e0e0e0');
 
-    // Add the drill bit sprite
+    // Add the formation zone
+    formationZone = this.add.rectangle(400, 300, 800, 200, 0x00ff00);  // Bright green for visibility
+
+    // Add the drill bit
     drillBit = this.physics.add.sprite(400, 300, 'drill1');
 
     // Create animation
@@ -49,12 +51,12 @@ function create() {
 
     cursors = this.input.keyboard.createCursorKeys();
 
-    // Add text elements for metrics
-    footageText = this.add.text(10, 10, 'Footage Drilled: 0 ft', { fontSize: '16px', fill: '#fff' });
-    inZoneText = this.add.text(10, 30, 'In-Zone Footage: 0 ft', { fontSize: '16px', fill: '#fff' });
-    torqueText = this.add.text(10, 50, 'Torque: 0', { fontSize: '16px', fill: '#fff' });
-    speedText = this.add.text(10, 70, 'Speed: 0 ft/hr', { fontSize: '16px', fill: '#fff' });
-    mudText = this.add.text(10, 90, 'Mud Weight: 50', { fontSize: '16px', fill: '#fff' });
+    // Add text elements for metrics in visible color
+    footageText = this.add.text(10, 10, 'Footage Drilled: 0 ft', { fontSize: '16px', fill: '#000' });  // Black text
+    inZoneText = this.add.text(10, 30, 'In-Zone Footage: 0 ft', { fontSize: '16px', fill: '#000' });
+    torqueText = this.add.text(10, 50, 'Torque: 0', { fontSize: '16px', fill: '#000' });
+    speedText = this.add.text(10, 70, 'Speed: 0 ft/hr', { fontSize: '16px', fill: '#000' });
+    mudText = this.add.text(10, 90, 'Mud Weight: 50', { fontSize: '16px', fill: '#000' });
 }
 
 function update(time, delta) {
