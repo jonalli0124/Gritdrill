@@ -42,10 +42,16 @@ function preload() {
 }
 
 function create() {
-    // Add the drill bit sprite (starting with drill1 frame)
+    // Add the formation zone first, so it is under the drill bit
+    formationZone = this.add.rectangle(400, (zoneMinY + zoneMaxY) / 2, 800, zoneMaxY - zoneMinY, 0x00ff00);
+    
+    // Then add the drill bit sprite
     drillBit = this.physics.add.sprite(400, 300, 'drill1');
+    
+    // Rotate the drill bit by 90 degrees
+    drillBit.setAngle(90);
 
-    // Create the animation using the frames
+    // Create the drilling animation
     this.anims.create({
         key: 'drilling',
         frames: [
@@ -55,19 +61,17 @@ function create() {
             { key: 'drill4' },
             { key: 'drill5' }
         ],
-        frameRate: 10,  // Adjust this value for speed of rotation
-        repeat: -1 // Loop indefinitely
+        frameRate: 10,
+        repeat: -1
     });
 
     // Start playing the animation
     drillBit.anims.play('drilling');
 
-    // Set up controls for movement
+    // Set up controls
     cursors = this.input.keyboard.createCursorKeys();
-
-    // Add the formation zone
-    formationZone = this.add.rectangle(400, (zoneMinY + zoneMaxY) / 2, 800, zoneMaxY - zoneMinY, 0x00ff00);
 }
+
 
 function update(time, delta) {
     // Handle movement
