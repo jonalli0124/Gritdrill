@@ -42,13 +42,12 @@ function preload() {
 }
 
 function create() {
-    // Add the formation zone first
+    // Add the formation zone first, so it is under the drill bit
     formationZone = this.add.rectangle(400, (zoneMinY + zoneMaxY) / 2, 800, zoneMaxY - zoneMinY, 0x00ff00);
     formationZone.setDepth(0);  // Ensure it is drawn under the drill bit
 
-    // Add the drill bit sprite
+    // Add the drill bit sprite (no rotation applied)
     drillBit = this.physics.add.sprite(400, 300, 'drill1');
-    drillBit.setAngle(90);  // Rotate the drill bit
     drillBit.setDepth(1);   // Ensure it is drawn on top of the formation zone
 
     // Create the drilling animation
@@ -70,6 +69,8 @@ function create() {
 
     // Set up controls
     cursors = this.input.keyboard.createCursorKeys();
+}
+Keys();
 }
 
 
