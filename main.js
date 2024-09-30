@@ -1,4 +1,3 @@
-
 let footageDrilled = 0;
 let inZoneDrilled = 0;
 let torque = 0;
@@ -9,12 +8,13 @@ let startButton;
 let footageText, inZoneText, torqueText, speedText, mudText;
 
 function preload() {
+    // Load the drill bit images and the start button from your repository
     this.load.image('drill1', './Drill1.png');
     this.load.image('drill2', './Drill2.png');
     this.load.image('drill3', './Drill3.png');
     this.load.image('drill4', './Drill4.png');
     this.load.image('drill5', './Drill5.png');
-    this.load.image('startButton', './startbutton.png'); // Add your start button image
+    this.load.image('startButton', './startbutton.png');
 }
 
 function create() {
@@ -28,12 +28,10 @@ function create() {
     });
 
     // Add the formation zone
-    formationZone = this.add.rectangle(400, (zoneMinY + zoneMaxY) / 2, 800, zoneMaxY - zoneMinY, 0x00ff00);
-    formationZone.setDepth(0);
+    formationZone = this.add.rectangle(400, 300, 800, 200, 0x00ff00);  // Adjusted size
 
-    // Add the drill bit
+    // Add the drill bit sprite
     drillBit = this.physics.add.sprite(400, 300, 'drill1');
-    drillBit.setDepth(1);
 
     // Create animation
     this.anims.create({
@@ -72,11 +70,11 @@ function update(time, delta) {
     }
 
     // Calculate speed and footage drilled
-    speed = Phaser.Math.Clamp(speed, 50, maxSpeed);
+    speed = Phaser.Math.Clamp(speed, 50, 300);  // Adjusted speed range
     footageDrilled += speed * delta / 3600;  // Convert time to hours for ft/hr
 
     // Check if the drill is in the zone
-    if (drillBit.y > zoneMinY && drillBit.y < zoneMaxY) {
+    if (drillBit.y > 200 && drillBit.y < 400) {
         inZoneDrilled += speed * delta / 3600;
     }
 
