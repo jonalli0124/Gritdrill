@@ -1,56 +1,40 @@
-const config = {
-    type: Phaser.AUTO,
-    width: 800,
-    height: 600,
-    backgroundColor: '#333333',
-    physics: {
-        default: 'arcade',
-        arcade: {
-            gravity: { y: 0 }
-        }
-    },
-    scene: {
-        preload: preload,
-        create: create,
-        update: update
-    }
-};
-
-const game = new Phaser.Game(config);
-
-let drillBit;
-let cursors;
-let formationZone;
-let zoneMinY = 200;
-let zoneMaxY = 400;
-let faultTimer = 0;
-let speed = 100;
-let maxSpeed = 300;
-let torqueThreshold = 250;
-let mudLevel = 50;
-let maxMud = 100;
-let minMud = 10;
+let footageDrilled = 0;
+let inZoneDrilled = 0;
+let torque = 0;
+let speed = 0;
+let mudWeight = 50;
+let gameStarted = false;
+let startButton;
+let footageText, inZoneText, torqueText, speedText, mudText;
 
 function preload() {
-    // Load the drill bit frames
-    this.load.image('drill1', './Drill1.png'); // Add ./ for relative path
+    this.load.image('drill1', './Drill1.png');
     this.load.image('drill2', './Drill2.png');
     this.load.image('drill3', './Drill3.png');
     this.load.image('drill4', './Drill4.png');
     this.load.image('drill5', './Drill5.png');
-
+    this.load.image('startButton', './startButton.png'); // Add your start button image
 }
 
 function create() {
-    // Add the formation zone first, so it is under the drill bit
+    // Add a start button
+    startButton = this.add.sprite(400, 300, 'startButton').setInteractive();
+
+    // Set up button click
+    startButton.on('pointerdown', () => {
+        startButton.setVisible(false);  // Hide start button once clicked
+        gameStarted = true;             // Begin game
+    });
+
+    // Add the formation zone
     formationZone = this.add.rectangle(400, (zoneMinY + zoneMaxY) / 2, 800, zoneMaxY - zoneMinY, 0x00ff00);
-    formationZone.setDepth(0);  // Ensure it is drawn under the drill bit
+    formationZone.setDepth(0);
 
-    // Add the drill bit sprite (no rotation applied)
+    // Add the drill bit
     drillBit = this.physics.add.sprite(400, 300, 'drill1');
-    drillBit.setDepth(1);   // Ensure it is drawn on top of the formation zone
+    drillBit.setDepth(1);
 
-    // Create the drilling animation
+    // Create animation
     this.anims.create({
         key: 'drilling',
         frames: [
@@ -64,17 +48,19 @@ function create() {
         repeat: -1
     });
 
-    // Start playing the animation
-    drillBit.anims.play('drilling');
-
-    // Set up controls
     cursors = this.input.keyboard.createCursorKeys();
-}
-Keys();
-}
 
+    // Add text elements for metrics
+    footageText = this.add.text(10, 10, 'Footage Drilled: 0 ft', { fontSize: '16px', fill: '#fff' });
+    inZoneText = this.add.text(10, 30, 'In-Zone Footage: 0 ft', { fontSize: '16px', fill: '#fff' });
+    torqueText = this.add.text(10, 50, 'Torque: 0', { fontSize: '16px', fill: '#fff' });
+    speedText = this.add.text(10, 70, 'Speed: 0 ft/hr', { fontSize: '16px', fill: '#fff' });
+    mudText = this.add.text(10, 90, 'Mud Weight: 50', { fontSize: '16px', fill: '#fff' });
+}
 
 function update(time, delta) {
+    if (!gameStarted) return;  // Do nothing until the game is started
+
     // Handle movement
     if (cursors.up.isDown) {
         drillBit.setVelocityY(-speed);
@@ -84,46 +70,27 @@ function update(time, delta) {
         drillBit.setVelocityY(0);
     }
 
-    if (cursors.left.isDown) {
-        speed = Phaser.Math.Clamp(speed - 2, 50, maxSpeed);
-    }
-    if (cursors.right.isDown) {
-        speed = Phaser.Math.Clamp(speed + 2, 50, maxSpeed);
+    // Calculate speed and footage drilled
+    speed = Phaser.Math.Clamp(speed, 50, maxSpeed);
+    footageDrilled += speed * delta / 3600;  // Convert time to hours for ft/hr
+
+    // Check if the drill is in the zone
+    if (drillBit.y > zoneMinY && drillBit.y < zoneMaxY) {
+        inZoneDrilled += speed * delta / 3600;
     }
 
-    // Check if the drill bit is out of the formation zone
-    if (drillBit.y < zoneMinY || drillBit.y > zoneMaxY) {
-        console.log('Out of Zone!');
-    }
+    // Adjust torque based on speed
+    torque = speed > 250 ? speed - 250 : 0;
 
-    // Handle faults: shift the formation zone every 5 seconds
-    faultTimer += delta;
-    if (faultTimer > 5000) {
-        shiftFormationZone();
-        faultTimer = 0;
-    }
-
-    // Mud management (space bar to increase mud level)
+    // Mud management (space key to adjust mud)
     if (cursors.space.isDown) {
-        mudLevel = Phaser.Math.Clamp(mudLevel + 1, minMud, maxMud);
+        mudWeight = Phaser.Math.Clamp(mudWeight + 0.1, 30, 100);  // Mud adjustment
     }
 
-    if (mudLevel < minMud || mudLevel > maxMud) {
-        console.log('Mud level out of range!');
-    }
-}
-
-function shiftFormationZone() {
-    // Randomly shift the formation zone
-    let shiftAmount = Phaser.Math.Between(-100, 100);
-    zoneMinY += shiftAmount;
-    zoneMaxY += shiftAmount;
-
-    // Keep the zone within bounds
-    zoneMinY = Phaser.Math.Clamp(zoneMinY, 50, 500);
-    zoneMaxY = Phaser.Math.Clamp(zoneMaxY, zoneMinY + 100, zoneMinY + 200);
-
-    // Update the visual zone
-    formationZone.y = (zoneMinY + zoneMaxY) / 2;
-    formationZone.height = zoneMaxY - zoneMinY;
+    // Update text elements with the latest values
+    footageText.setText('Footage Drilled: ' + footageDrilled.toFixed(2) + ' ft');
+    inZoneText.setText('In-Zone Footage: ' + inZoneDrilled.toFixed(2) + ' ft');
+    torqueText.setText('Torque: ' + torque.toFixed(2));
+    speedText.setText('Speed: ' + speed.toFixed(2) + ' ft/hr');
+    mudText.setText('Mud Weight: ' + mudWeight.toFixed(2));
 }
